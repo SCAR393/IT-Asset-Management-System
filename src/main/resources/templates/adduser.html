@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Employee</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+            background:#f1f5f9;
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height:100vh;
+            color:white;
+            overflow-x:hidden;
+        }
+
+        /* Background Glow */
+
+        body::before{
+            content:'';
+            position:fixed;
+            top:-180px;
+            right:-180px;
+            width:450px;
+            height:450px;
+            background:rgba(212,175,55,0.05);
+            border-radius:50%;
+            filter:blur(90px);
+            z-index:0;
+        }
+
+        body::after{
+            content:'';
+            position:fixed;
+            bottom:-180px;
+            left:-180px;
+            width:450px;
+            height:450px;
+            background:rgba(15,23,42,0.04);
+            border-radius:50%;
+            filter:blur(90px);
+            z-index:0;
+        }
+
+        /* Layout */
+
+        .main-wrapper{
+            position:relative;
+            z-index:2;
+        }
+
+        /* Main Content */
+
+        .content{
+            width:100%;
+		    display:flex;
+		    flex-direction:column;
+		    align-items:center;
+		    justify-content:center;
+		    padding:50px 20px;
+        }
+
+        /* Header */
+
+        .page-header{
+            text-align:center;
+    		margin-bottom:30px;
+        }
+
+        .page-header h1{
+            color:#0f172a;
+            font-size:2.3rem;
+            margin-bottom:10px;
+        }
+
+        .page-header p{
+            color:#94a3b8;
+            font-size:0.95rem;
+        }
+
+        /* Card */
+
+        .form-card{
+            background:#ffffff;
+            border-radius:22px;
+            padding:35px;
+            border:1px solid #e2e8f0;
+            box-shadow:0 20px 45px rgba(0,0,0,0.35);
+            width:100%;
+            max-width: 850px;
+        }
+
+        /* Form Layout */
+
+        .form-grid{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:22px;
+        }
+
+        .form-group{
+            display:flex;
+            flex-direction:column;
+        }
+
+        .form-group.full-width{
+            grid-column:span 2;
+        }
+
+        /* Labels */
+
+        .form-group label{
+            margin-bottom:8px;
+            color:#475569;
+            font-size:0.92rem;
+            font-weight:500;
+        }
+
+        /* Inputs */
+
+        .form-group input,
+        .form-group select{
+
+            width:100%;
+            padding:14px;
+            border-radius:10px;
+            border:1px solid #e2e8f0;
+            background:#ffffff;
+            color:#0f172a;
+            font-size:15px;
+            transition:0.3s ease;
+        }
+
+        .form-group input::placeholder{
+            color:#64748b;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus{
+
+            outline:none;
+           	border-color:#d4af37;
+			box-shadow:0 0 0 4px rgba(212,175,55,.15);
+        }
+
+        /* Role Select */
+
+        select{
+            cursor:pointer;
+        }
+
+        /* Submit Button */
+
+        .submit-btn{
+
+            width:100%;
+            margin-top:30px;
+            padding:15px;
+            border:none;
+            border-radius:12px;
+            background:#0f172a;
+			color:#ffffff;
+            font-size:1rem;
+            font-weight:700;
+            cursor:pointer;
+            transition:0.3s ease;
+        }
+
+        .submit-btn:hover{
+            background:#1e293b;
+            transform:translateY(-2px);
+        }
+
+        /* Password Field */
+
+        .password-wrapper{
+            position:relative;
+        }
+
+        .password-wrapper input{
+            padding-right:45px;
+        }
+
+        .toggle-password{
+
+            position:absolute;
+            right:15px;
+            top:50%;
+            transform:translateY(-50%);
+            cursor:pointer;
+            color:#64748b;
+        }
+
+        .toggle-password:hover{
+			color:#d4af37;			
+        }
+
+        @media(max-width:768px){
+
+            .content{
+                padding:20px;
+            }
+
+            .form-card{
+                padding:25px;
+            }
+
+            .form-grid{
+                grid-template-columns:1fr;
+            }
+
+            .form-group.full-width{
+                grid-column:span 1;
+            }
+
+            .page-header h1{
+                font-size:1.8rem;
+            }
+        }
+        
+        .top-header{
+		    position: relative;
+		    z-index: 9999;
+		    height:110px;
+		  	background:#0f172a;
+		    display:flex;
+		    justify-content:space-between;
+		    align-items:center;
+		    padding:0 40px;
+		}
+		
+		.logo-section h2{
+		    color:#f5c542;
+		    margin:0;
+		    font-size:34px;
+    		font-weight:700;
+		}
+		
+		.logo-section span{
+		    color:#64748b;
+		    font-size:16px;
+		}
+		
+		.header-buttons{
+		    display:flex;
+		    gap:15px;
+		}
+		
+		.header-buttons button{
+		
+		    background:#1e293b;
+			color:#ffffff;
+		    border:none;
+		    padding:14px 28px;
+		    border-radius:10px;
+		    cursor:pointer;
+		    transition:0.3s;
+		 	font-size:15px;
+   			font-weight:600;
+		}
+		
+		.header-buttons button:hover{
+		    background:#d4af37;
+			color:#0f172a;
+		}
+
+    </style>
+</head>
+
+<body>
+
+<div class="top-header">
+
+    <div class="logo-section">
+        <h2>CMPDIL</h2>
+        <span>Asset Management System</span>
+    </div>
+
+    <div class="header-buttons">
+
+        <button onclick="window.location.href='/admin-dashboard'">
+            <i class="fa-solid fa-house"></i>
+            Dashboard
+        </button>
+
+        <button onclick="window.location.href='/employee'">
+            <i class="fa-solid fa-users"></i>
+            List Employees
+        </button>
+
+    </div>
+
+</div>
+
+
+<div class="main-wrapper">
+
+    <!-- Main Content -->
+
+    <div class="content">
+
+        <div class="page-header">
+
+            <h1>Add Employee</h1>
+
+            <p>
+                Create and manage employee accounts securely.
+            </p>
+
+        </div>
+
+        <!-- Form Card -->
+
+        <div class="form-card">
+
+            <form th:action="@{/save}"
+                  th:object="${employee}"
+                  method="post">
+
+                <div class="form-grid">
+
+                    <!-- Name -->
+
+                    <div class="form-group">
+
+                        <label for="name">
+
+                            Full Name
+
+                        </label>
+
+                        <input type="text"
+                               id="name"
+                               th:field="*{name}"
+                               placeholder="Enter Employee Name"
+                               required>
+
+                    </div>
+
+                    <!-- DOJ -->
+
+                    <div class="form-group">
+
+                        <label for="dateOfJoining">
+
+                            Date of Joining
+
+                        </label>
+
+                        <input type="date"
+                               id="dateOfJoining"
+                               th:field="*{date_of_joining}"
+                               required>
+
+                    </div>
+
+                    <!-- Password -->
+
+                    <div class="form-group">
+
+                        <label for="password">
+
+                            Password
+
+                        </label>
+
+                        <div class="password-wrapper">
+
+                            <input type="password"
+                                   id="password"
+                                   th:field="*{password}"
+                                   placeholder="Enter Password"
+                                   required>
+
+                            <i class="fa-solid fa-eye toggle-password"
+                               onclick="togglePassword()"></i>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Mobile -->
+
+                    <div class="form-group">
+
+                        <label for="phone_no">
+
+                            Mobile Number
+
+                        </label>
+
+                        <input type="text"
+                               id="phone_no"
+                               th:field="*{phone_no}"
+                               placeholder="Enter Mobile Number"
+                               required>
+
+                    </div>
+                    
+                    <div class="form-group">
+					    <label>Email</label>
+					    <input type="email"
+					           th:field="*{email}"
+					           placeholder="Enter Employee Email"
+					           required>
+					</div>
+
+                    <!-- Role -->
+
+                    <div class="form-group full-width">
+
+                        <label for="role">
+
+                            Employee Role
+
+                        </label>
+
+                        <select id="role"
+                                th:field="*{role}"
+                                required>
+
+                            <option value="">
+                                Select Role
+                            </option>
+
+                            <option value="A">
+                                Administrator
+                            </option>
+
+                            <option value="U">
+                                Employee
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <!-- Submit -->
+
+                <button type="submit"
+                        class="submit-btn">
+
+                    <i class="fa-solid fa-user-plus"></i>
+
+                    Create Employee
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    function togglePassword(){
+
+        const passwordField =
+            document.getElementById("password");
+
+        const type =
+            passwordField.getAttribute("type") === "password"
+            ? "text"
+            : "password";
+
+        passwordField.setAttribute("type", type);
+    }
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8">
+<title>Survey List</title>
+
+<style>
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+table, th, td{
+    border:1px solid black;
+}
+
+th, td{
+    padding:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>All Provisional Surveys</h2>
+
+<table>
+
+<tr>
+    <th>ID</th>
+    <th>Surveyor</th>
+    <th>Condition</th>
+    <th>Repair Cost</th>
+    <th>Scrap Value</th>
+    <th>Recommendation</th>
+</tr>
+
+<tr th:each="s : ${surveys}">
+
+    <td th:text="${s.id}"></td>
+
+    <td th:text="${s.surveyorName}"></td>
+
+    <td th:text="${s.assetCondition}"></td>
+
+    <td th:text="${s.estimatedRepairCost}"></td>
+
+    <td th:text="${s.estimatedScrapValue}"></td>
+
+    <td th:text="${s.recommendation}"></td>
+
+</tr>
+
+</table>
+
+</body>
+</html>

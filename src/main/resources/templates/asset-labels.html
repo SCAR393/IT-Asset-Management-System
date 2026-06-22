@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Asset QR Labels — GOV Asset Mgmt</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+
+:root {
+    --navy:       #f1f5f9;
+    --navy-card:  #ffffff;
+    --navy-row:   #f4f8f5;
+    --navy-hover: #f8fbf9;
+    --gold:       #d4af37;
+    --gold-light: #f5c542;
+    --green:      #166534;
+    --green-bg:   #dcfce7;
+    --red:        #dc2626;
+    --red-bg:     #fee2e2;
+    --text:       #0f172a;
+    --text-muted: #64748b;
+    --border:     #e2e8f0;
+    --shadow:     0 8px 30px rgba(15,23,42,.08);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    background: var(--navy);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 36px 28px;
+}
+
+.container { max-width: 1300px; margin: auto; }
+
+/* ── Header ── */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.page-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 2rem;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    letter-spacing: -.5px;
+}
+.page-title i { font-size: 1.3rem; opacity: .8; }
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.home-btn {
+    text-decoration: none;
+    background: #0f172a;
+    border: none;
+    color: white;
+    padding: 13px 24px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 15px;
+    transition: all .25s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+}
+.home-btn:hover { background: #1e293b; color: white; transform: translateY(-2px); }
+
+.print-btn {
+    background: var(--gold);
+    border: none;
+    color: #0f172a;
+    padding: 13px 24px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all .25s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Sans', sans-serif;
+}
+.print-btn:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+/* ── Info bar ── */
+.top-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.info-pill {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: var(--shadow);
+}
+.info-pill span {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.5rem;
+    color: var(--gold-light);
+}
+
+/* ── Grid ── */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+/* ── Label Card ── */
+.label {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 12px;
+    text-align: center;
+    height: 240px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    box-shadow: 0 4px 14px rgba(15,23,42,.06);
+    transition: box-shadow .2s, transform .2s;
+    position: relative;
+    overflow: hidden;
+}
+.label::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 14px 14px 0 0;
+}
+.label:hover {
+    box-shadow: 0 8px 24px rgba(15,23,42,.12);
+    transform: translateY(-2px);
+}
+
+.company {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.label img {
+    width: 110px;
+    height: 110px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    padding: 4px;
+    background: white;
+}
+
+.asset-id {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gold);
+    background: rgba(212,175,55,.1);
+    border: 1px solid rgba(212,175,55,.25);
+    padding: 3px 10px;
+    border-radius: 6px;
+}
+
+.product {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+    max-width: 90%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.location-dept{
+    font-size:12px;
+    font-weight:700;
+    color:#0f172a;
+    margin-top:4px;
+    text-align:center;
+    max-width:95%;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+/* ── Empty state ── */
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    background: var(--navy-card);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+}
+.empty-state i { font-size: 2.5rem; display: block; margin-bottom: 14px; opacity: .35; }
+.empty-state p { font-size: 15px; font-weight: 500; }
+
+/* ── Print styles ── */
+@media print {
+    .top-bar,
+    .page-header { display: none !important; }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background: white;
+    }
+
+    .container { max-width: 100%; }
+
+    .grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+    }
+
+    .label {
+        border: 1px solid #333;
+        border-radius: 6px;
+        box-shadow: none;
+        height: 260px;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .label::before { display: none; }
+
+    .asset-id {
+        background: none;
+        border: none;
+        color: #000;
+        font-size: 11px;
+    }
+
+    .company { color: #333; }
+    .product { color: #555; }
+
+    @page {
+        size: A4;
+        margin: 8mm;
+    }
+    .label img{
+    width:80px;
+    height:80px;
+	}
+}
+
+@media (max-width: 900px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 500px) {
+    .grid { grid-template-columns: 1fr; }
+    .page-title { font-size: 1.3rem; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="page-header">
+        <h1 class="page-title">
+            <i class="fas fa-qrcode"></i>
+            Asset QR Labels
+        </h1>
+        <div class="header-actions">
+            <button class="print-btn" onclick="window.print()">
+                <i class="fas fa-print"></i>
+                Print Labels
+            </button>
+            <a href="/admin-dashboard" class="home-btn">
+                <i class="fas fa-home"></i>
+                Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Info bar -->
+    <div class="top-bar">
+        <div class="info-pill">
+            <i class="fas fa-tags"></i>
+            Total Labels&nbsp;:&nbsp;
+            <span th:text="${#lists.size(assets)}">0</span>
+        </div>
+    </div>
+
+    <!-- Labels grid -->
+    <div class="grid">
+
+        <div th:if="${#lists.isEmpty(assets)}" class="empty-state">
+            <i class="fas fa-qrcode"></i>
+            <p>No assets found to generate labels.</p>
+        </div>
+
+        <div class="label" th:each="asset : ${assets}">
+            <div class="company">CMPDIL</div>
+            <img th:src="@{/qr/{id}(id=${asset.assetId})}" alt="QR Code">
+            <div class="asset-id">
+		    <span th:text="${asset.assetId}"></span>
+		</div>
+		<div class="location-dept">
+		    <span th:text="${#strings.replace(asset.location.locationCode,'-','')}"></span>
+		    <span th:if="${asset.department != null}">
+		    	-
+		        <span th:text="${asset.department}"></span>
+		    </span>
+		</div>
+		<div class="product"
+		     th:text="${asset.product.productName}">
+		</div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

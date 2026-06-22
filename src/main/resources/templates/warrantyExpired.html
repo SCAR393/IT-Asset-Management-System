@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expired Warranties</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+
+:root{
+    --primary:#0f172a;
+    --secondary:#1e293b;
+    --gold:#d4af37;
+    --bg:#f1f5f9;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:var(--bg);
+    font-family:'Roboto',sans-serif;
+}
+
+.container{
+    width:95%;
+    margin:25px auto;
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.page-title{
+    color:var(--primary);
+    font-size:32px;
+    font-weight:700;
+}
+
+.dashboard-btn{
+    background:#0f172a;
+    color:white;
+    padding:12px 20px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:600;
+    transition:.3s;
+}
+
+.dashboard-btn:hover{
+	background:#1e293b;
+    transform:translateY(-2px);
+    color:white;
+}
+
+.card{
+    background:white;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 8px 25px rgba(15,23,42,.12);
+    border:1px solid #e2e8f0;
+}
+
+.card-header{
+    background:#0f172a;
+    color:white;
+    padding:18px 25px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.card-header h2{
+    font-size:22px;
+}
+
+.count-badge{
+    background:#fef3c7;
+	color:#92400e;
+    padding:8px 14px;
+    border-radius:20px;
+    font-weight:bold;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+thead{
+    background:#f8fafc;
+}
+
+th{
+    padding:16px;
+    text-align:center;
+    color:var(--primary);
+    font-size:15px;
+    border-bottom:2px solid #e5e7eb;
+}
+
+td{
+
+	color:#334155;
+    padding:15px;
+    text-align:center;
+    font-size:15px;
+    border-bottom:1px solid #ececec;
+}
+
+tbody tr{
+    transition:.3s;
+}
+
+tbody tr:hover{
+    background:#f8fafc;
+}
+
+tbody tr:last-child td{
+    border-bottom:none;
+}
+
+.expired-badge{
+    background:#fee2e2;
+    color:#991b1b;
+    padding:6px 12px;
+    border-radius:20px;
+    font-weight:600;
+    font-size:13px;
+}
+
+.empty-state{
+    text-align:center;
+    padding:40px;
+    color:#64748b;
+    font-size:18px;
+}
+
+.footer{
+    margin-top:20px;
+    text-align:center;
+}
+
+.footer a{
+    text-decoration:none;
+    background:#0f172a;
+    color:white;
+    padding:12px 25px;
+    border-radius:10px;
+    font-weight:600;
+}
+
+.footer a:hover{
+    background:#1e293b;
+}
+
+</style>
+</head>
+<body>
+
+
+<div class="container">
+
+    <div class="header">
+
+        <h1 class="page-title">
+            <i class="fas fa-exclamation-triangle"></i>
+            Expired Warranty Assets
+        </h1>
+
+        <a href="/admin-dashboard"
+           class="dashboard-btn">
+
+            <i class="fas fa-home"></i>
+            Dashboard
+
+        </a>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <h2>
+                Warranty Expiry Report
+            </h2>
+
+            <div class="count-badge">
+
+                Total :
+                <span th:text="${expiredAssets.size()}">
+                    0
+                </span>
+
+            </div>
+
+        </div>
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Product Name</th>
+                    <th>Model</th>
+                    <th>Department</th>
+                    <th>Purchase Date</th>
+                    <th>Warranty</th>
+                    <th>Seller ID</th>
+                    <th>Status</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr th:each="asset : ${expiredAssets}">
+
+                    <td th:text="${asset.product.productName}"></td>
+                    <td th:text="${asset.product.model}"></td>
+                    <td th:text="${asset.department}"></td>
+                    <td th:text="${asset.product.purchaseDate}"></td>
+                    <td th:text="${asset.product.warranty + ' Years'}"></td>
+                    <td th:text="${asset.product.sellerId}"></td>
+                    <td>
+                        <span class="expired-badge">
+                            Expired
+                        </span>
+                    </td>
+
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(expiredAssets)}">
+
+                    <td colspan="6">
+
+                        <div class="empty-state">
+
+                            No expired warranties found.
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Add New Location</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+
+            background:#f1f5f9;
+            color:#0f172a;
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height:100vh;
+            overflow-x:hidden;
+        }
+
+        /* Background Glow */
+
+        body::before{
+            content:'';
+            position:fixed;
+            top:-180px;
+            right:-180px;
+            width:450px;
+            height:450px;
+            background:rgba(212,175,55,0.05);
+            border-radius:50%;
+            filter:blur(90px);
+            z-index:0;
+        }
+
+        body::after{
+            content:'';
+            position:fixed;
+            bottom:-180px;
+            left:-180px;
+            width:450px;
+            height:450px;
+            background:rgba(15,23,42,0.04);
+            border-radius:50%;
+            filter:blur(90px);
+            z-index:0;
+        }
+
+        /* Main Content */
+
+        .content{
+            min-height:calc(100vh - 80px);
+		    display:flex;
+		    justify-content:center;
+		    align-items:center;
+		    padding:40px;
+        }
+
+        /* Form Card */
+
+        .form-card{
+
+            width:100%;
+            max-width:700px;
+			margin: auto;
+            background:#ffffff;
+            border-radius:28px;
+            padding:45px;
+            border:1px solid #e2e8f0;
+            box-shadow:0 8px 25px rgba(15,23,42,.12);
+            position:relative;
+            overflow:hidden;
+        }
+
+        .form-card::before{
+
+            content:'';
+            position:absolute;
+            top:-100px;
+            right:-100px;
+            width:250px;
+            height:250px;
+            background:rgba(212,168,67,0.05);
+            border-radius:50%;
+        }
+
+        /* Header */
+
+        .form-header{
+
+            position:relative;
+            z-index:2;
+            margin-bottom:35px;
+        }
+
+        .form-header h1{
+
+            font-size:2.7rem;
+            color:#0f172a;
+            margin-bottom:12px;
+        }
+
+        .form-header p{
+
+            color:#64748b;
+            line-height:1.7;
+        }
+
+        /* Form Group */
+
+        .form-group{
+
+            position:relative;
+
+            z-index:2;
+
+            margin-bottom:28px;
+        }
+
+        .form-group label{
+
+            display:block;
+            margin-bottom:10px;
+            color:#475569;
+            font-size:0.95rem;
+            font-weight:500;
+        }
+
+        .form-group input{
+
+            width:100%;
+            padding:15px 16px;
+            border-radius:14px;
+            background:#ffffff;
+			border:1px solid #e2e8f0;
+			color:#0f172a;
+            font-size:1rem;
+            transition:0.3s ease;
+        }
+
+        .form-group input::placeholder{
+
+            color:#64748b;
+        }
+
+        .form-group input:focus{
+
+            outline:none;
+            border-color:#d4af37;
+			box-shadow:0 0 0 4px rgba(212,175,55,.15);
+        }
+
+        /* Button */
+
+        .submit-btn{
+
+            width:100%;
+            padding:16px;
+            border:none;
+            border-radius:14px;
+           background:#d4af37;
+			color:#0f172a;
+            font-size:1rem;
+            font-weight:700;
+            cursor:pointer;
+            transition:0.3s ease;
+            position:relative;
+            z-index:2;
+        }
+
+        .submit-btn:hover{
+
+            background:#f5c542;
+            transform:translateY(-2px);
+        }
+
+        /* Icon */
+
+        .background-icon{
+
+            position:absolute;
+            bottom:20px;
+            right:25px;
+            font-size:140px;
+            color:rgba(15,23,42,0.05);
+        }
+        
+        .top-header{
+
+		    height:80px;
+			position: relative;
+		    background:#0f172a;
+			z-index: 1000;
+		    display:flex;
+		    justify-content:space-between;
+		    align-items:center;
+		    padding:0 40px;
+		    border-bottom:1px solid rgba(255,255,255,0.08);
+		}
+		
+		.logo-section h2{
+		
+		    color:#f5c542;
+		    margin:0;
+		}
+		
+		.logo-section span{
+		
+		    color:#94a3b8;
+		    font-size:13px;
+		}
+		
+		.header-buttons{
+		
+		    display:flex;
+		    gap:15px;
+		}
+		
+		.header-buttons button{
+		
+		    background:#1e293b;
+			color:white;
+		    border:none;
+		    padding:12px 22px;
+		    border-radius:10px;
+		    font-size:14px;
+		    cursor:pointer;
+		    transition:0.3s;
+		}
+		
+		.header-buttons button:hover{
+		
+		    background:#d4af37;
+			color:#0f172a;
+		}
+
+        /* Responsive */
+
+        @media(max-width:768px){
+
+            .content{
+                padding:20px;
+            }
+
+            .form-card{
+                padding:30px;
+            }
+
+            .form-header h1{
+                font-size:1.9rem;
+            }
+
+            .background-icon{
+                display:none;
+            }
+
+            .nav-links button{
+                flex:1 1 100%;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="top-header">
+
+    <div class="logo-section">
+        <h2>CMPDIL</h2>
+        <span>Asset Management System</span>
+    </div>
+
+    <div class="header-buttons">
+
+        <button onclick="window.location.href='/admin-dashboard'">
+            <i class="fa-solid fa-house"></i>
+            Dashboard
+        </button>
+
+        <button onclick="window.location.href='/listlocation'">
+            <i class="fa-solid fa-list"></i>
+            List Locations
+        </button>
+
+    </div>
+
+</div>
+
+    <!-- Main Content -->
+
+    <div class="content">
+
+        <!-- Form Card -->
+
+        <div class="form-card">
+
+            <div class="form-header">
+
+                <h1>
+                    Add New Location
+                </h1>
+
+                <p>
+                    Register and manage new office branches or asset locations
+                    within the organization infrastructure system.
+                </p>
+
+            </div>
+
+            <!-- Form -->
+
+            <form th:action="@{/savenewlocation}"
+                  th:object="${location}"
+                  method="post">
+
+                <div class="form-group">
+
+                    <label for="location_name">
+
+                        Location Name
+
+                    </label>
+
+                    <input type="text"
+                           id="location_name"
+                           th:field="*{location_name}"
+                           placeholder="Enter Location Name"
+                           required>
+
+                </div>
+
+                <button type="submit"
+                        class="submit-btn">
+
+                    <i class="fa-solid fa-location-dot"></i>
+
+                    Save Location
+
+                </button>
+
+            </form>
+
+            <!-- Background Icon -->
+
+            <i class="fa-solid fa-map-location-dot background-icon"></i>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

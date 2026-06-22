@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Location Management</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+
+            background:#f1f5f9;
+			color:#0f172a;
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height:100vh;
+            padding:30px;
+        }
+
+        /* Background Glow */
+
+        body::before{
+
+            content:'';
+            position:fixed;
+            top:-150px;
+            right:-150px;
+            width:400px;
+            height:400px;
+            background:rgba(212,175,55,0.05);
+            border-radius:50%;
+            filter:blur(90px);
+            z-index:0;
+        }
+
+        body::after{
+
+            content:'';
+            position:fixed;
+            bottom:-150px;
+            left:-150px;
+            width:400px;
+            height:400px;
+            background:rgba(15,23,42,0.04);
+            border-radius:50%;
+            filter:blur(90px);
+            z-index:0;
+        }
+
+        .wrapper{
+
+            position:relative;
+            z-index:2;
+            max-width:1400px;
+            margin:auto;
+        }
+
+        /* Header */
+
+        .header{
+
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            flex-wrap:wrap;
+            gap:20px;
+            margin-bottom:30px;
+        }
+
+        .header-left h1{
+
+            font-size:2.3rem;
+            color:#0f172a;
+            margin-bottom:10px;
+        }
+
+        .header-left p{
+
+            color:#64748b;
+            font-size:0.95rem;
+        }
+
+        /* Buttons */
+
+        .top-buttons{
+
+            display:flex;
+            gap:15px;
+            flex-wrap:wrap;
+        }
+
+        .btn{
+
+            display:inline-flex;
+            align-items:center;
+            gap:10px;
+
+            padding:13px 18px;
+            border-radius:12px;
+            text-decoration:none;
+            font-size:0.92rem;
+            font-weight:600;
+            transition:0.3s ease;
+        }
+
+        .dashboard-btn{
+		    background:#0f172a;
+		    color:white;
+		}
+        .dashboard-btn:hover{
+
+             background:#1e293b;
+            transform:translateY(-2px);
+        }
+
+        .add-btn{
+		    background:#d4af37;
+		    color:#0f172a;
+		}
+
+        .add-btn:hover{
+
+            background:#f5c542;
+            transform:translateY(-2px);
+        }
+
+        /* Card */
+
+        .card{
+
+            background:#ffffff;
+            border-radius:22px;
+            border:1px solid #e2e8f0;
+            padding:28px;
+            box-shadow:0 8px 25px rgba(15,23,42,.12);
+        }
+
+        /* Search */
+
+        .search-container{
+
+            margin-bottom:25px;
+        }
+
+        .search-box{
+
+            position:relative;
+            width:350px;
+            max-width:100%;
+        }
+
+        .search-box input{
+
+            width:100%;
+            background:#ffffff;
+			border:1px solid #e2e8f0;
+			color:#0f172a;
+            border-radius:12px;
+            padding:14px 14px 14px 45px;
+            font-size:0.95rem;
+        }
+		.search-box input::placeholder{
+		    color:#64748b;
+		}
+        .search-box input:focus{
+
+            outline:none;
+            border-color:#d4af37;
+			box-shadow:0 0 0 4px rgba(212,175,55,.15);
+        }
+
+        .search-box i{
+
+            position:absolute;
+            left:15px;
+            top:50%;
+            transform:translateY(-50%);
+            color:#64748b;
+        }
+
+        /* Table */
+
+        .table-container{
+
+            overflow-x:auto;
+        }
+
+        table{
+
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        thead{
+
+            background:#f8fafc;
+        }
+
+        thead th{
+
+            padding:16px;
+            text-align:left;
+            color:#0f172a;
+            font-size:0.9rem;
+            font-weight:600;
+            border-bottom:1px solid rgba(255,255,255,0.06);
+        }
+
+        tbody tr{
+
+            border-bottom:1px solid rgba(255,255,255,0.05);
+            transition:0.3s ease;
+        }
+
+        tbody tr:hover{
+
+            background:#f8fafc;
+        }
+
+        tbody td{
+
+            padding:16px;
+            color:#334155;
+            font-size:0.92rem;
+        }
+
+        /* Location Badge */
+
+        .location-badge{
+
+            display:inline-block;
+            background:#dbeafe;
+			color:#1e3a8a;
+            padding:7px 14px;
+            border-radius:50px;
+            font-size:0.8rem;
+            font-weight:700;
+        }
+
+        /* Action Buttons */
+
+        .action-buttons{
+
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+        }
+
+        .action-btn{
+
+            padding:8px 14px;
+            border-radius:8px;
+            text-decoration:none;
+            font-size:0.82rem;
+            font-weight:600;
+            transition:0.3s ease;
+        }
+
+        .edit-btn{
+
+            background:#d4af37;
+			color:#0f172a;
+        }
+
+        .edit-btn:hover{
+		    background:#f5c542;
+		}
+
+        .delete-btn{
+
+            background:#C94B4B;
+            color:white;
+        }
+
+        .delete-btn:hover{
+
+            background:#dc2626;
+        }
+        
+        .location-indicator{
+		    display:flex;
+		    align-items:center;
+		    gap:8px;
+		    background:#fef3c7;
+		    color:#92400e;
+		    padding:13px 18px;
+		    border-radius:12px;
+		    font-size:.9rem;
+		    font-weight:700;
+		}
+
+        /* Responsive */
+
+        @media(max-width:768px){
+
+            body{
+                padding:15px;
+            }
+
+            .card{
+                padding:20px;
+            }
+
+            .header{
+                flex-direction:column;
+                align-items:flex-start;
+            }
+
+            .header-left h1{
+                font-size:1.8rem;
+            }
+
+            .search-box{
+                width:100%;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <!-- Header -->
+
+    <div class="header">
+
+        <div class="header-left">
+
+            <h1>
+                Location Management
+            </h1>
+
+            <p>
+                Manage organization office and asset locations efficiently.
+            </p>
+
+        </div>
+
+        <div class="top-buttons">
+
+    <div class="location-indicator">
+
+        <i class="fa-solid fa-location-dot"></i>
+
+        <span th:text="${selectedLocation.location_name}">
+            CMPDIL HQ
+        </span>
+
+    </div>
+
+    <a href="/admin-dashboard"
+       class="btn dashboard-btn">
+
+        <i class="fa-solid fa-house"></i>
+        Dashboard
+
+    </a>
+
+    <a href="/addlocation"
+       class="btn add-btn">
+
+        <i class="fa-solid fa-location-dot"></i>
+        Add Location
+
+    </a>
+
+</div>
+
+    </div>
+
+    <!-- Main Card -->
+
+    <div class="card">
+
+        <!-- Search -->
+
+        <div class="search-container">
+
+            <div class="search-box">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input type="text"
+                       id="searchInput"
+                       placeholder="Search locations..."
+                       onkeyup="searchLocations()">
+
+            </div>
+
+        </div>
+
+        <!-- Table -->
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                <tr>
+
+                    <th>Location ID</th>
+
+                    <th>Location Name</th>
+
+                    <th>Actions</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                <tr th:each="location : ${locations}">
+
+                    <!-- Location ID -->
+
+                    <td th:text="${location.locationId}">
+                        1
+                    </td>
+
+                    <!-- Location Name -->
+
+                    <td>
+
+                        <span class="location-badge"
+                              th:text="${location.location_name}">
+
+                            CMPDIL Ranchi
+
+                        </span>
+
+                    </td>
+
+                    <!-- Actions -->
+
+                    <td>
+
+                        <div class="action-buttons">
+
+                            <a th:href="@{/location/{locationId}/edit(locationId=${location.locationId})}"
+                               class="action-btn edit-btn">
+
+                                <i class="fa-solid fa-pen"></i>
+
+                                Edit
+
+                            </a>
+
+                            <a th:href="@{/location/delete/{locationId}(locationId=${location.locationId})}"
+                               class="action-btn delete-btn"
+                               onclick="return confirm('Delete this location?')">
+
+                                <i class="fa-solid fa-trash"></i>
+
+                                Delete
+
+                            </a>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    function searchLocations(){
+
+        let input =
+            document.getElementById("searchInput")
+            .value.toLowerCase();
+
+        let rows =
+            document.querySelectorAll("tbody tr");
+
+        rows.forEach(row => {
+
+            let text =
+                row.innerText.toLowerCase();
+
+            row.style.display =
+                text.includes(input)
+                ? ""
+                : "none";
+        });
+    }
+
+</script>
+
+</body>
+
+</html>

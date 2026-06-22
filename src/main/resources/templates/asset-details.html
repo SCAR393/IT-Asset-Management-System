@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Asset Details</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+
+:root{
+    --navy:#1E3A5F;
+    --navy-light:#29507E;
+    --gold:#C89B2D;
+    --bg:#EEF3FA;
+    --card:#FFFFFF;
+    --border:#E5E7EB;
+    --text:#1F2937;
+    --muted:#6B7280;
+    --green:#1E8E5A;
+    --green-bg:rgba(30,142,90,.12);
+    --red:#D9534F;
+    --red-bg:rgba(217,83,79,.12);
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:var(--bg);
+    font-family:'Segoe UI',sans-serif;
+    color:var(--text);
+}
+
+.container{
+    max-width:1000px;
+    margin:40px auto;
+    padding:20px;
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+}
+
+.page-title{
+    color:var(--navy);
+    font-size:32px;
+    font-weight:700;
+}
+
+.dashboard-btn{
+    text-decoration:none;
+    background:var(--navy);
+    color:white;
+    padding:12px 22px;
+    border-radius:10px;
+    font-weight:600;
+    transition:.3s;
+}
+
+.dashboard-btn:hover{
+    background:var(--navy-light);
+}
+
+.asset-card{
+    background:white;
+    border-radius:20px;
+    border:1px solid var(--border);
+    box-shadow:0 8px 24px rgba(0,0,0,.06);
+    overflow:hidden;
+}
+
+.card-header{
+    background:linear-gradient(
+        135deg,
+        var(--navy),
+        var(--navy-light)
+    );
+
+    color:white;
+    padding:25px;
+}
+
+.card-header h2{
+    font-size:26px;
+}
+
+.card-header p{
+    opacity:.9;
+    margin-top:5px;
+}
+
+.details-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:20px;
+    padding:30px;
+}
+
+.detail-box{
+    background:#F8FAFD;
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:18px;
+}
+
+.detail-label{
+    color:var(--muted);
+    font-size:13px;
+    margin-bottom:8px;
+    text-transform:uppercase;
+    font-weight:600;
+}
+
+.detail-value{
+    color:var(--text);
+    font-size:17px;
+    font-weight:600;
+}
+
+.status{
+    display:inline-block;
+    padding:8px 14px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:700;
+}
+
+.status-assigned{
+    background:var(--green-bg);
+    color:var(--green);
+}
+
+.status-other{
+    background:var(--red-bg);
+    color:var(--red);
+}
+
+.footer{
+    padding:25px;
+    text-align:center;
+    border-top:1px solid var(--border);
+}
+
+.asset-id-badge{
+    display:inline-block;
+    background:rgba(200,155,45,.12);
+    color:var(--gold);
+    padding:10px 20px;
+    border-radius:20px;
+    font-weight:700;
+}
+
+@media(max-width:768px){
+
+    .details-grid{
+        grid-template-columns:1fr;
+    }
+
+    .header{
+        flex-direction:column;
+        gap:15px;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div class="container">
+
+    <div class="header">
+
+        <h1 class="page-title">
+
+            <i class="fas fa-barcode"></i>
+
+            Asset Details
+
+        </h1>
+
+        <a href="/admin-dashboard"
+           class="dashboard-btn">
+
+            <i class="fas fa-home"></i>
+
+            Dashboard
+
+        </a>
+
+    </div>
+
+    <div class="asset-card">
+
+        <div class="card-header">
+
+            <h2 th:text="${asset.product.productName}">
+                Product Name
+            </h2>
+
+            <p>
+                Asset Information & Ownership Details
+            </p>
+
+        </div>
+        
+
+        <div class="details-grid">
+
+            <div class="detail-box">
+                <div class="detail-label">
+                    Asset ID
+                </div>
+
+                <div class="detail-value"
+                     th:text="${asset.assetId}">
+                </div>
+            </div>
+
+            <div class="detail-box">
+                <div class="detail-label">
+                    Product Name
+                </div>
+
+                <div class="detail-value"
+                     th:text="${asset.product.productName}">
+                </div>
+            </div>
+
+            <div class="detail-box">
+                <div class="detail-label">
+                    Category
+                </div>
+
+                <div class="detail-value"
+                     th:text="${asset.product.categoryName}">
+                </div>
+            </div>
+
+            <div class="detail-box">
+                <div class="detail-label">
+                    Model
+                </div>
+
+                <div class="detail-value"
+                     th:text="${asset.product.model}">
+                </div>
+            </div>
+
+            <div class="detail-box">
+                <div class="detail-label">
+                    Department
+                </div>
+
+                <div class="detail-value"
+                     th:text="${asset.department}">
+                </div>
+            </div>
+
+            <div class="detail-box">
+                <div class="detail-label">
+                    Location
+                </div>
+
+                <div class="detail-value"
+                     th:text="${asset.location.location_name}">
+                </div>
+            </div>
+
+            <div class="detail-box">
+                <div class="detail-label">
+                    Assigned Employee
+                </div>
+
+                <div class="detail-value"
+                     th:text="${asset.employee != null ? asset.employee.name : 'Not Assigned'}">
+                </div>
+            </div>
+
+            <div class="detail-box">
+                <div class="detail-label">
+                    Employee ID
+                </div>
+
+                <div class="detail-value"
+                     th:text="${asset.employee != null ? asset.employee.employeeId : '-'}">
+                </div>
+            </div>
+
+            <div class="detail-box">
+                <div class="detail-label">
+                    Purchase Date
+                </div>
+
+                <div class="detail-value"
+                     th:text="${asset.purchaseDate}">
+                </div>
+            </div>
+
+            <div class="detail-box">
+                <div class="detail-label">
+                    Warranty
+                </div>
+
+                <div class="detail-value"
+                     th:text="${asset.warrantyYears + ' Years'}">
+                </div>
+            </div>
+
+            <div class="detail-box">
+                <div class="detail-label">
+                    Status
+                </div>
+
+                <div>
+                    <span th:if="${asset.status == 'Assigned'}"
+                          class="status status-assigned"
+                          th:text="${asset.status}">
+                    </span>
+
+                    <span th:unless="${asset.status == 'Assigned'}"
+                          class="status status-other"
+                          th:text="${asset.status}">
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer">
+
+            <div class="asset-id-badge">
+
+                CMPDIL Asset :
+                <span th:text="${asset.assetId}">
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

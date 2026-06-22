@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assign Assets To Lot</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+
+/* ── Google Font ── */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@700&display=swap');
+
+:root {
+    --navy:        #EEF3FA;
+    --navy-card:   #FFFFFF;
+    --navy-row:    #F8FAFD;
+    --navy-hover:  #EDF4FF;
+	--gold:          #D4AF37;
+	--gold-light:    #F5C542;
+    --gold-dim:    rgba(200,155,45,.10);
+    --green:       #1E8E5A;
+    --green-bg:    rgba(30,142,90,.10);
+    --red:         #D9534F;
+    --red-bg:      rgba(217,83,79,.10);
+    --amber: 		 #D4AF37;
+    --amber-bg:    rgba(229,158,11,.10);
+    --text:        #1F2937;
+    --text-muted:  #6B7280;
+    --border:      #E5E7EB;
+    --shadow:      0 8px 30px rgba(15,23,42,.08);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    background:#EEF3FA;
+    color:var(--text);
+    font-family:'DM Sans',sans-serif;
+    min-height:100vh;
+    padding:36px 28px;
+}
+
+/* ── Layout ── */
+.container { max-width: 1300px; margin: auto; }
+
+/* ── Header ── */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.page-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 2rem;
+    color:#0f172a;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    letter-spacing: -.5px;
+}
+
+.page-title i { font-size: 1.3rem; opacity: .8; }
+
+.home-btn {
+    text-decoration: none;
+    background:#0f172a;
+    border: none;
+    color: white;
+    padding: 15px 28px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 16px;
+    transition: all .25s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.home-btn:hover { background:#1e293b; color: white; transform: translateY(-2px); }
+
+/* ── Card ── */
+.card{
+    background:#FFFFFF;
+    border-radius:18px;
+    padding:28px;
+    border:1px solid #E5E7EB;
+    box-shadow:0 6px 20px rgba(0,0,0,.05);
+}
+
+/* ── Top bar inside card ── */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.info-pill {
+    background:#f8fafc;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    padding: 14px 24px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.info-pill span {
+    font-family: 'Space Mono', monospace;
+    font-size: 2rem;
+    color: var(--gold-light);
+}
+
+/* ── Table ── */
+.table-wrapper { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+
+table { width: 100%; border-collapse: collapse; }
+
+thead { background:#F8FAFD; }
+
+thead th {
+    color: #1E3A5F;
+    padding: 14px 18px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+
+
+tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background .2s;
+}
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background:#EDF4FF; }
+
+tbody td {
+    padding: 18px 20px;
+    font-size: 15px;
+    vertical-align: middle;
+}
+
+
+.asset-id {
+    font-family: 'Space Mono', monospace;
+    color: var(--gold-light);
+    font-size: 13px;
+}
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+}
+
+.status-assigned  { background: var(--green-bg);  color: var(--green);  }
+.status-available { background: var(--amber-bg);  color: var(--amber);  }
+.status-other     { background: var(--red-bg);    color: var(--red);    }
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+.empty-state i { font-size: 2rem; display: block; margin-bottom: 10px; opacity: .4; }
+
+/* ── Checkbox ── */
+input[type="checkbox"] {
+    width: 17px; height: 17px;
+    accent-color: var(--gold);
+    cursor: pointer;
+}
+
+/* ── Actions row ── */
+.actions-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 22px;
+}
+
+.selection-info {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+.selection-info strong { color: var(--gold); }
+
+.assign-btn {
+    background:#0f172a;
+    color: white;
+    border: none;
+    padding: 13px 28px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .25s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Sans', sans-serif;
+}
+.assign-btn:hover { background:#1e293b;}
+.assign-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+/* ── Toast ── */
+.toast {
+    display: none;
+    position: fixed;
+    bottom: 28px; right: 28px;
+    background: var(--green-bg);
+    border: 1px solid var(--green);
+    color: var(--green);
+    padding: 14px 22px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 9999;
+    animation: slideUp .3s ease;
+}
+@keyframes slideUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── Lots Section ── */
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-family: 'Space Mono', monospace;
+    color: var(--gold);
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.lots-count {
+    font-size: 15px;
+    color: var(--text-muted);
+    background: var(--navy-row);
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+}
+
+/* Lots table */
+.lots-table { width: 100%; border-collapse: collapse;table-layout: fixed; }
+
+.lots-table thead { background: var(--navy-row); }
+
+.lots-table th {
+    padding: 13px 18px;
+    text-align: left;
+    color:#0f172a;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    vertical-align: middle;
+}
+
+.lots-table td {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+}
+
+.lots-table tbody tr:last-child td { border-bottom: none; }
+.lots-table tbody tr:hover { background: var(--navy-hover); }
+
+.lot-badge{
+    white-space:nowrap;
+    display:inline-block;
+    min-width:140px;
+    text-align:center;
+}
+
+.asset-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+.asset-count.has-assets { color: var(--text); font-weight: 600; }
+
+/* Delete button */
+.delete-btn {
+    background: transparent;
+    border: 1px solid rgba(248,113,113,.3);
+    color: var(--red);
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Sans', sans-serif;
+}
+.delete-btn:hover {  background:#fee2e2;border-color:#dc2626; transform: translateY(-1px); }
+
+/* Confirm modal */
+.modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.7);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+.modal-overlay.active { display: flex; }
+
+.modal {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    width: 420px;
+    max-width: 90vw;
+    box-shadow: var(--shadow);
+    animation: popIn .2s ease;
+}
+@keyframes popIn { from { opacity:0; transform:scale(.95); } to { opacity:1; transform:scale(1); } }
+
+.modal-icon {
+    width: 52px; height: 52px;
+    background: var(--red-bg);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 18px;
+    font-size: 1.4rem;
+    color: var(--red);
+}
+
+.modal h3 {
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: var(--text);
+}
+
+.modal p {
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    line-height: 1.6;
+}
+
+.modal p strong { color: var(--gold); }
+
+.modal-actions { display: flex; gap: 12px; justify-content: center; }
+
+.btn-cancel {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 11px 24px;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    font-family: 'DM Sans', sans-serif;
+}
+.btn-cancel:hover { border-color: var(--text-muted); color: var(--text); }
+
+.btn-delete {
+    background: var(--red);
+    border: none;
+    color: #fff;
+    padding: 11px 24px;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+    font-family: 'DM Sans', sans-serif;
+}
+.btn-delete:hover {  background:#b91c1c; transform: translateY(-1px); }
+
+/* Responsive */
+@media (max-width: 700px) {
+    body { padding: 20px 14px; }
+    .page-title { font-size: 1.2rem; }
+    .top-bar { flex-direction: column; align-items: flex-start; }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- Confirm Delete Modal -->
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal">
+        <div class="modal-icon"><i class="fas fa-trash-alt"></i></div>
+        <h3>Delete Lot</h3>
+        <p>Are you sure you want to delete lot <strong id="modalLotNumber"></strong>?<br>
+        This action cannot be undone.</p>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+            <form id="deleteForm" method="post" style="display:inline;">
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="submit" class="btn-delete">
+                    <i class="fas fa-trash-alt"></i> Delete
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toastMsg">Assets assigned successfully!</span>
+</div>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="page-header">
+        <h1 class="page-title">
+            <i class="fas fa-layer-group"></i>
+            Create Lot &amp; Assign Assets
+        </h1>
+        <a href="/admin-dashboard" class="home-btn">
+            <i class="fas fa-home"></i>
+            Dashboard
+        </a>
+    </div>
+
+    <!-- ── Assign Form ── -->
+    <form action="/assign-lot" method="post" id="assignForm">
+
+        <div class="card">
+
+            <div class="top-bar">
+                <div class="info-pill">
+                    <i class="fas fa-tag"></i>
+                    New lot number will be generated automatically
+                </div>
+                <div class="info-pill">
+                    <i class="fas fa-boxes"></i>
+                    Assets Available&nbsp;:&nbsp;
+                    <span th:text="${#lists.size(assets)}">0</span>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>
+                               Select
+                            </th>
+                            <th>Asset ID</th>
+                            <th>Product Name</th>
+                            <th>Location</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <!-- Empty state -->
+                        <tr th:if="${#lists.isEmpty(assets)}">
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <i class="fas fa-inbox"></i>
+                                    No assets available to assign.
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr th:each="asset : ${assets}">
+                            <td>
+                                <input type="checkbox"
+                                       class="asset-cb"
+                                       name="assetIds"
+                                       th:value="${asset.assetId}">
+                            </td>
+                            <td class="asset-id" th:text="${asset.assetId}"></td>
+                            <td th:text="${asset.product.productName}"></td>
+                            <td th:text="${asset.location.location_name}"></td>
+                            <td th:text="${asset.department != null ? asset.department : '—'}"></td>
+                            <td>
+                                <span th:if="${asset.status == 'Assigned'}"
+                                      class="status status-assigned">
+                                    <i class="fas fa-circle" style="font-size:7px;"></i> Assigned
+                                </span>
+                                <span th:if="${asset.status == 'Available'}"
+                                      class="status status-available">
+                                    <i class="fas fa-circle" style="font-size:7px;"></i> Available
+                                </span>
+                                <span th:unless="${asset.status == 'Assigned' or asset.status == 'Available'}"
+                                      class="status status-other"
+                                      th:text="${asset.status}">
+                                </span>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="actions-row">
+                <div class="selection-info">
+                    <strong id="selectedCount">0</strong> asset(s) selected
+                </div>
+                <button type="submit" class="assign-btn" id="assignBtn" disabled>
+                    <i class="fas fa-check-circle"></i>
+                    Assign Selected Assets to New Lot
+                </button>
+            </div>
+
+        </div>
+
+    </form>
+
+    <!-- ── Existing Lots ── -->
+    <div class="card">
+
+        <div class="section-header">
+            <div class="section-title">
+                <i class="fas fa-layer-group"></i>
+                Existing Lots
+            </div>
+            <div class="lots-count"
+                 th:text="${#lists.size(lots)} + ' lot(s)'">0 lot(s)</div>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="lots-table">
+                <thead>
+                    <tr>
+                        <th>Lot Number</th>
+                        <th>No. of Assets</th>
+                       	<th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr th:if="${#lists.isEmpty(lots)}">
+                        <td colspan="4">
+                            <div class="empty-state">
+                                <i class="fas fa-folder-open"></i>
+                                No lots created yet.
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr th:each="lot : ${lots}">
+                        <td>
+                            <span class="lot-badge" th:text="${lot.lotNumber}"></span>
+                        </td>
+                        <td>
+                            <!-- This now works correctly because Lot.assets uses mappedBy="lot" -->
+                            <span class="asset-count"
+                                  th:classappend="${#lists.size(lot.assets) > 0} ? 'has-assets' : ''"
+                                  th:text="${#lists.size(lot.assets)}">
+                            </span>
+                        </td>
+               
+                        <td>
+                            <button type="button"
+                                    class="delete-btn"
+                                    th:attr="onclick='confirmDelete(' + ${lot.id} + ', \'' + ${lot.lotNumber} + '\')'">
+                                <i class="fas fa-trash-alt"></i>
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+// ── Select All / count ──────────────────────────────────
+const checkboxes = document.querySelectorAll('.asset-cb');
+const countEl = document.getElementById('selectedCount');
+const assignBtn = document.getElementById('assignBtn');
+
+function updateCount() {
+    const checked =
+        document.querySelectorAll('.asset-cb:checked').length;
+    countEl.textContent = checked;
+    assignBtn.disabled = checked === 0;
+}
+checkboxes.forEach(cb => {
+    cb.addEventListener('change', updateCount);
+});
+updateCount();
+
+// ── Delete modal ────────────────────────────────────────
+function confirmDelete(lotId, lotNumber) {
+    document.getElementById('modalLotNumber').textContent = lotNumber;
+    document.getElementById('deleteForm').action = '/delete-lot/' + lotId;
+    document.getElementById('deleteModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('deleteModal').classList.remove('active');
+}
+
+// Close modal on overlay click
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+
+// ── Toast on redirect ───────────────────────────────────
+const params = new URLSearchParams(window.location.search);
+if (params.get('success') === 'assigned') showToast('Assets assigned to new lot successfully!');
+if (params.get('success') === 'deleted')  showToast('Lot deleted successfully.');
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    t.style.display = 'flex';
+    t.style.alignItems = 'center';
+    t.style.gap = '10px';
+    setTimeout(() => t.style.display = 'none', 3500);
+}
+</script>
+
+</body>
+</html>

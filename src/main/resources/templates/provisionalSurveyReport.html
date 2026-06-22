@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Provisional Survey Report</title>
+
+<!-- Bootstrap -->
+<link href=
+"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+rel="stylesheet">
+
+<!-- Font Awesome -->
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+
+body{
+    background:#eef3fa;
+    font-family:Arial;
+}
+
+.report-wrapper{
+    width:95%;
+    margin:auto;
+    margin-top:20px;
+}
+
+.top-bar{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:15px;
+}
+
+.report-container{
+    background:white;
+    border-radius:12px;
+    border:3px solid #d4af37;
+    padding:10px;
+}
+
+.title{
+    text-align:center;
+    font-weight:bold;
+    font-size:22px;
+}
+
+.subtitle{
+    text-align:center;
+    font-size:16px;
+    margin-bottom:20px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+table th,
+table td{
+    border:1px solid black;
+    padding:10px;
+    font-size:15px;
+}
+
+table th{
+    text-align:center;
+    background:#f2f2f2;
+}
+
+input{
+    border:none;
+    width:100%;
+    outline:none;
+}
+
+.signature-section{
+    margin-top:70px;
+    display:flex;
+    justify-content:space-between;
+}
+
+.signature-box{
+    width:18%;
+    text-align:center;
+    font-size:12px;
+}
+
+.signature-line{
+    border-top:1px solid black;
+    margin-top:40px;
+}
+
+.note-section{
+    margin-top:40px;
+    font-size:11px;
+}
+
+@media print{
+    .top-bar{
+        display:none !important;
+    }
+    body{
+        background:white;
+    }
+    .report-container{
+        box-shadow:none;
+    }
+}
+.logo-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:20px;
+}
+
+.left-logo{
+
+    width:220px;
+    height:auto;
+}
+
+.right-logo{
+
+    width:220px;
+    height:auto;
+}
+
+.report-heading{
+
+    text-align:center;
+    flex:1;
+}
+@page{
+    size: A4 landscape;
+    margin: 5mm;
+}
+@media print{
+
+    table th,
+    table td{
+        font-size:9px;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="report-wrapper">
+
+    <!-- TOP BUTTONS -->
+    <div class="top-bar">
+
+        <h3>
+            CMPDI Asset Management System
+        </h3>
+
+        <div>
+	    <a href="/admin-dashboard"
+	       class="btn btn-warning">
+	        <i class="fa fa-home"></i>
+	        Dashboard
+	    </a>
+	    <button class="btn btn-primary"
+	            onclick="window.print()">
+	        <i class="fa fa-print"></i>
+	        Print
+	    </button>
+	    <button class="btn btn-success"
+	            onclick="window.print()">
+	        <i class="fa fa-file-pdf"></i>
+	        Download PDF
+	    </button>
+		</div>
+    </div>
+
+    <!-- REPORT -->
+    <div class="report-container">
+
+        <div class="logo-header">
+
+		    <img src="/images/cmpdi-logo.png"
+		         class="left-logo">
+		
+		    <div class="report-heading">
+		
+		        <div class="title">
+		            ANNEXURE-9
+		        </div>
+		
+		        <div class="subtitle">
+		            <b>PROVISIONAL SURVEY OFF REPORT
+		            (For Equipment/P&M)</b>
+		        </div>
+		
+		    </div>
+		
+		    <img src="/images/coal-india.png"
+		         class="right-logo">
+		
+		</div>
+
+        <!-- TOP DETAILS -->
+        <table>
+
+            <tr>
+
+                <td>
+                    <b>Survey Off Report No.</b>
+                </td>
+
+                <td>
+                    <input type="text">
+                </td>
+
+                <td>
+                    <b>Location of Lot:</b>
+                </td>
+
+                <td>
+                    <input type="text">
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td>
+                    <b>Stock Holding Area:</b>
+                </td>
+
+                <td>
+                    <input type="text">
+                </td>
+
+                <td>
+                    <b>Lot Number:</b>
+                </td>
+
+                <td>
+				    <select id="lotDropdown"
+				            class="form-select">
+				        <option value="">
+				            Select Lot Number
+				        </option>
+				        <option th:each="lot : ${lots}"
+				                th:value="${lot.id}"
+				                th:text="${lot.lotNumber}">
+				        </option>
+				    </select>
+				
+				</td>
+
+            </tr>
+
+            <tr>
+
+                <td>
+                    <b>Stock Holding Unit:</b>
+                </td>
+
+                <td>
+                    <input type="text">
+                </td>
+
+                <td></td>
+
+                <td></td>
+
+            </tr>
+
+            <tr>
+
+                <td>
+                    <b>Date of Survey</b>
+                </td>
+
+                <td>
+                    <input type="date">
+                </td>
+
+                <td></td>
+
+                <td></td>
+
+            </tr>
+
+        </table>
+
+        <br>
+
+        <!-- MAIN TABLE -->
+        <table>
+
+            <tr>
+
+                <th>Sl.No</th>
+                <th>Class of Store</th>
+                <th>Code No</th>
+                <th>Description of Stores of Equipment</th>
+                <th>Quantity</th>
+                <th>Estimated Life of Equipment & Period for which used</th>
+                <th>Original Purchase Price</th>
+                <th>Written Down Value</th>
+                <th>Present Condition</th>
+                <th>Last sale value realized for similar items</th>
+                <th>Reserve Value</th>
+                <th>Replacement or Present Market value</th>
+                <th>Unit of measurement for sale(No./kg/Tons)</th>
+
+            </tr>
+            
+            <tr>
+
+			    <th>(1)</th>
+			    <th>(2)</th>
+			    <th>(3)</th>
+			    <th>(4)</th>
+			    <th>(5)</th>
+			    <th>(6)</th>
+			    <th>(7)</th>
+			    <th>(8)</th>
+			    <th>(9)</th>
+			    <th>(10)</th>
+			    <th>(11)</th>
+			    <th>(12)</th>
+			    <th>(13)</th>
+				
+			</tr>
+
+            <!-- EMPTY EDITABLE ROWS -->
+
+            <tbody id="assetRows">
+
+		</tbody>
+
+        </table>
+
+        <!-- SIGNATURE SECTION -->
+        <div class="signature-section">
+
+            <div class="signature-box">
+
+                <div class="signature-line"></div>
+
+                <b>Nodal officer (S&D)</b>
+
+            </div>
+
+            <div class="signature-box">
+
+                <div class="signature-line"></div>
+
+                <b>Representative of Technical Dept</b>
+
+            </div>
+
+            <div class="signature-box">
+
+                <div class="signature-line"></div>
+
+                <b>Representative of HOD(E&M)</b>
+
+            </div>
+
+            <div class="signature-box">
+
+                <div class="signature-line"></div>
+
+                <b>Representative of HOD(FIN)</b>
+
+            </div>
+
+            <div class="signature-box">
+
+                <div class="signature-line"></div>
+
+                <b>Representative of HOD(PMS)</b>
+
+            </div>
+
+        </div>
+
+        <!-- NOTES -->
+        <div class="note-section">
+
+            <b>Note:</b>
+
+            <ol>
+
+                <li>
+                    Technical Wing refers to Excavation/E&M/Safety/System/Civil etc.
+                </li>
+
+                <li>
+                    Depending on the organizational structure of an Area,the signatories may be suitably incorporated in the format,as per Clause 3.1.
+                </li>
+                
+                <li>
+                	If the Equipment is to be sold in Numbers then no cutting/dismentalling shall be allowed for the lot and delivery will be allowed for the equipment dismentalling or cutting.
+				</li>
+            </ol>
+
+        </div>
+
+    </div>
+
+</div>
+<script>
+
+document.getElementById("lotDropdown")
+.addEventListener("change", function(){
+    let lotId = this.value;
+    if(!lotId){
+        document.getElementById("assetRows").innerHTML = "";
+        return;
+    }
+    fetch("/provisional-survey/lot/" + lotId)
+    .then(response => response.json())
+    .then(data => {
+        let tbody =
+            document.getElementById("assetRows");
+        tbody.innerHTML = "";
+        data.forEach((asset,index)=>{
+            let expectedLife;
+            if(asset.category &&
+               asset.category.toUpperCase() === "PC"){
+                expectedLife = 3;
+            }
+            else{
+                expectedLife = asset.warranty;
+            }
+            let purchaseDate =
+                new Date(asset.purchaseDate);
+            let today =
+                new Date();
+            let yearsUsed =
+                ((today - purchaseDate) /
+                (1000 * 60 * 60 * 24 * 365))
+                .toFixed(1);
+            let lifeText =
+                expectedLife +
+                " Yrs & " +
+                yearsUsed +
+                " Yrs";
+            tbody.innerHTML += `
+            <tr>
+                <td>${index + 1}</td>
+                <td></td>
+                <td>${asset.productId}</td>
+                <td>${asset.productName}</td>
+                <td>${asset.quantity}</td>
+                <td>${lifeText}</td>
+                <td>${asset.price}</td>
+                <td>
+                    <input type="text">
+                </td>
+                <td>
+                    <input type="text">
+                </td>
+                <td>
+                    <input type="text">
+                </td>
+                <td>
+                    <input type="text">
+                </td>
+                <td>
+                    <input type="text">
+                </td>
+                <td>
+                	<input type="text">
+            	</td>
+            </tr>
+            `;
+        });
+    })
+    .catch(error => {
+        console.error(error);
+        alert(
+            "Unable to load lot details."
+        );
+    });
+
+});
+
+</script>
+
+</body>
+</html>

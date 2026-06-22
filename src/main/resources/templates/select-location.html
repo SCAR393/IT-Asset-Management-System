@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Select Location</title>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+    margin:0;
+    font-family:'DM Sans',sans-serif;
+    background:#f4f6f9;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.card{
+    width:450px;
+    background:white;
+    border-radius:18px;
+    padding:40px;
+    box-shadow:0 15px 40px rgba(0,0,0,.08);
+}
+
+h2{
+    text-align:center;
+    margin-bottom:25px;
+    color:#0f172a;
+}
+
+select{
+    width:100%;
+    padding:14px;
+    border:1px solid #d1d5db;
+    border-radius:10px;
+    font-size:15px;
+}
+
+button{
+    width:100%;
+    margin-top:20px;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:#d4af37;
+    color:black;
+    font-weight:700;
+    cursor:pointer;
+}
+
+button:hover{
+    opacity:.9;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="card">
+
+    <h2>Select Location</h2>
+
+    <form action="/set-location" method="post">
+
+        <select name="locationId" required>
+
+            <option value="">
+                Choose Location
+            </option>
+
+            <option
+                th:each="loc : ${locations}"
+                th:value="${loc.locationId}"
+                th:text="${loc.location_name}">
+            </option>
+
+        </select>
+
+        <button type="submit">
+            Continue
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

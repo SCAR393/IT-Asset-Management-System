@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Add New Seller</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    background:#f1f5f9;
+    color:#0f172a;
+    font-family:'Segoe UI',sans-serif;
+    min-height:100vh;
+    padding:30px;
+}
+
+.container{
+
+    max-width:1200px;
+    margin:auto;
+}
+
+.header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+}
+
+.header h1{
+
+    color:#0f172a;
+    font-size:2.5rem;
+}
+
+.dashboard-btn{
+
+    background:#0f172a;
+    color:#ffffff;
+    text-decoration:none;
+    padding:12px 22px;
+    border-radius:10px;
+    font-weight:600;
+    transition:0.3s;
+}
+
+.dashboard-btn:hover{
+
+    background:#1e293b;
+}
+
+.stats{
+
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+    margin-bottom:30px;
+}
+
+.stat-card{
+
+    background:#ffffff;
+    border-radius:20px;
+    padding:25px;
+    text-align:center;
+    box-shadow:0 8px 20px rgba(0,0,0,0.3);
+}
+
+.stat-card i{
+
+    font-size:2rem;
+    color:#d4af37;
+    margin-bottom:10px;
+}
+
+.stat-card h2{
+
+    font-size:2rem;
+}
+
+.stat-card p{
+    color:#64748b;
+}
+
+.form-card{
+
+    background:#ffffff;
+    border-radius:24px;
+    padding:35px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.3);
+    border:1px solid #e2e8f0;
+}
+
+.form-grid{
+
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.form-group{
+
+    display:flex;
+    flex-direction:column;
+}
+
+.form-group label{
+
+    margin-bottom:8px;
+    font-weight:600;
+    color:#475569;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea{
+
+    background:#ffffff;
+	border:1px solid #e2e8f0;
+	color:#0f172a;
+    padding:14px;
+    border-radius:12px;
+    font-size:15px;
+}
+input::placeholder,
+textarea::placeholder{
+    color:#64748b;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{
+    outline:none;
+    border-color:#d4af37;
+    box-shadow:0 0 0 4px rgba(212,175,55,.15);
+}
+.form-group textarea{
+
+    resize:none;
+    height:120px;
+}
+
+.full-width{
+
+    grid-column:1 / -1;
+}
+
+.btn-group{
+
+    display:flex;
+    gap:15px;
+    margin-top:30px;
+}
+
+.submit-btn{
+
+    background:#d4af37;
+	color:#0f172a;
+    border:none;
+    padding:14px 30px;
+    border-radius:12px;
+    cursor:pointer;
+    font-size:16px;
+    font-weight:600;
+}
+
+.submit-btn:hover{
+
+    background:#f5c542;
+}
+
+.reset-btn{
+
+    background:#dc2626;
+    color:white;
+    border:none;
+    padding:14px 30px;
+    border-radius:12px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+.reset-btn:hover{
+
+    background:#b91c1c;
+}
+
+.stat-card,
+.form-card{
+    box-shadow:0 8px 25px rgba(15,23,42,.12);
+}
+
+@media(max-width:768px){
+
+    .form-grid{
+
+        grid-template-columns:1fr;
+    }
+
+    .header{
+
+        flex-direction:column;
+        gap:20px;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>
+            <i class="fa-solid fa-building"></i>
+            Seller Management
+        </h1>
+
+        <a href="/admin-dashboard"
+           class="dashboard-btn">
+
+            <i class="fa-solid fa-house"></i>
+            Dashboard
+
+        </a>
+
+    </div>
+
+    <!-- STATS -->
+
+    <div class="stats">
+
+        <div class="stat-card">
+            <i class="fa-solid fa-users"></i>
+            <h2 th:text="${totalSellers}">0</h2>
+            <p>Total Sellers</p>
+        </div>
+
+    </div>
+
+    <!-- FORM -->
+
+    <div class="form-card">
+
+        <form action="/savenewseller" method="post">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Seller ID</label>
+                    <input type="text" name="SellerId" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Company Name</label>
+                    <input type="text" name="CompanyName" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Contact Number</label>
+                    <input type="text" name="ContactNo" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" name="EmailId" required>
+                </div>
+
+                <div class="form-group">
+                    <label>GSTIN</label>
+                    <input type="text"
+                           name="GSTIN"
+                           placeholder="29ABCDE1234F1Z5"
+                           maxlength="15"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label>Vendor Status</label>
+
+                    <select name="VendorStatus" required>
+
+                        <option value="">
+                            Select Status
+                        </option>
+
+                        <option value="Active">
+                            Active
+                        </option>
+
+                        <option value="Inactive">
+                            Inactive
+                        </option>
+
+                        <option value="Blacklisted">
+                            Blacklisted
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+                    <label>MSME Verification</label>
+
+                    <select name="MsmeVerified" required>
+
+                        <option value="">
+                            Select Status
+                        </option>
+
+                        <option value="Yes">
+                            Verified
+                        </option>
+
+                        <option value="No">
+                            Not Verified
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+                    <label>MSME Registration No</label>
+
+                    <input type="text"
+                           name="MSMERegistrationNo"
+                           placeholder="UDYAM-JH-20-0001234">
+                </div>
+
+                <div class="form-group full-width">
+
+                    <label>Address</label>
+
+                    <textarea name="Address"
+                              required></textarea>
+
+                </div>
+
+            </div>
+
+            <div class="btn-group">
+
+                <button type="submit"
+                        class="submit-btn">
+
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Save Seller
+
+                </button>
+
+                <button type="reset"
+                        class="reset-btn">
+
+                    <i class="fa-solid fa-rotate-left"></i>
+                    Reset
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

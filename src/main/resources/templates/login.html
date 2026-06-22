@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0,
+          minimum-scale=1.0, user-scalable=no">
+
+    <title>Login</title>
+
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #0D1B2A;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Background glow blobs */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -20%;
+            right: -15%;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle,
+                    rgba(212,168,67,0.08) 0%,
+                    transparent 70%);
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -25%;
+            left: -15%;
+            width: 550px;
+            height: 550px;
+            border-radius: 50%;
+            background: radial-gradient(circle,
+                    rgba(102,126,234,0.08) 0%,
+                    transparent 70%);
+            pointer-events: none;
+        }
+
+        /* Grid overlay */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+        }
+
+        .auth-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 600px;
+            padding: 1rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Brand */
+        .brand {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .brand-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 68px;
+            height: 68px;
+            background: #D4A843;
+            border-radius: 16px;
+            margin-bottom: 0.7rem;
+            box-shadow: 0 8px 24px rgba(212,168,67,0.3);
+        }
+
+        .brand-icon svg {
+            width: 36px;
+            height: 36px;
+            stroke: #0D1B2A;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .brand-name {
+            display: block;
+            font-weight: 700;
+            font-size: 1.7rem;
+            color: #ffffff;
+            letter-spacing: 0.1em;
+        }
+
+        .brand-sub {
+            display: block;
+            font-size: 0.8rem;
+            color: #8A9BB0;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            margin-top: 0.15rem;
+        }
+
+        /* Card */
+        .auth-card {
+            background: #162236;
+            border: 1px solid rgba(212,168,67,0.18);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+        }
+
+        /* Tab bar */
+        .tab-bar {
+            display: grid;
+            grid-template-columns: 1fr;
+            background: #0D1B2A;
+            border-bottom: 1px solid rgba(212,168,67,0.15);
+        }
+
+        .tab-btn {
+            padding: 1rem;
+            background: none;
+            border: none;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.05em;
+            color: #D4A843;
+            position: relative;
+        }
+
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 20%;
+            right: 20%;
+            height: 2px;
+            background: #D4A843;
+            border-radius: 2px 2px 0 0;
+        }
+
+        /* Panel */
+        .panel {
+            padding: 2.5rem 3rem;
+        }
+
+        /* Alerts */
+        .msg-error {
+            background: rgba(224,82,82,0.12);
+            border: 1px solid rgba(224,82,82,0.35);
+            border-radius: 8px;
+            color: #F0A0A0;
+            font-size: 0.85rem;
+            padding: 0.65rem 0.9rem;
+            margin-bottom: 1.2rem;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1.3rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #8A9BB0;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap .field-icon {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 17px;
+            height: 17px;
+            stroke: #8A9BB0;
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            pointer-events: none;
+        }
+
+        .form-control {
+            width: 100%;
+            background: #1E3250 !important;
+            border: 1px solid rgba(255,255,255,0.08) !important;
+            border-radius: 8px !important;
+            padding: 0.9rem 1rem 0.9rem 2.8rem !important;
+            color: #ffffff !important;
+            font-size: 1.05rem !important;
+            transition: border-color 0.2s, box-shadow 0.2s !important;
+        }
+
+        .form-control::placeholder {
+            color: rgba(138,155,176,0.45) !important;
+        }
+
+        .form-control:focus {
+            border-color: #D4A843 !important;
+            box-shadow: 0 0 0 3px rgba(212,168,67,0.12) !important;
+            outline: none !important;
+            background: #1E3250 !important;
+        }
+
+        /* Password toggle */
+        .pwd-toggle {
+            position: absolute;
+            right: 11px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        .pwd-toggle svg {
+            width: 17px;
+            height: 17px;
+            stroke: #8A9BB0;
+            fill: none;
+            stroke-width: 1.8;
+        }
+
+        .has-toggle .form-control {
+            padding-right: 2.4rem !important;
+        }
+
+        /* Meta */
+        .form-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.4rem;
+        }
+
+        .remember-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            cursor: pointer;
+            margin-bottom: 0;
+        }
+
+        .remember-wrap input[type=checkbox] {
+            width: 15px;
+            height: 15px;
+            accent-color: #D4A843;
+        }
+
+        .remember-wrap span {
+            font-size: 0.83rem;
+            color: #8A9BB0;
+        }
+
+        .forgot-link {
+            font-size: 0.83rem;
+            color: #E8C06A;
+            text-decoration: none;
+        }
+
+        /* Button */
+        .btn-login {
+            background-color: #D4A843 !important;
+            color: #0D1B2A !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 0.95rem 1rem !important;
+            width: 100%;
+            font-size: 1.05rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.06em;
+        }
+
+        .btn-login:hover {
+            background-color: #E8C06A !important;
+        }
+
+        .page-footer {
+            text-align: center;
+            margin-top: 1.2rem;
+            font-size: 0.72rem;
+            color: rgba(138,155,176,0.4);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="bg-grid"></div>
+
+<div class="auth-wrapper">
+
+    <!-- Brand -->
+    <div class="brand">
+        <div class="brand-icon">
+            <svg viewBox="0 0 24 24">
+                <path d="M3 21H21M3 10H21M5 6L12 3L19 6M4 10V21M20 10V21M8 14V17M12 14V17M16 14V17"/>
+            </svg>
+        </div>
+
+        <span class="brand-name">CMPDIL</span>
+        <span class="brand-sub">Asset Management System</span>
+    </div>
+
+    <!-- Card -->
+    <div class="auth-card">
+
+        <!-- Sign In Header -->
+        <div class="tab-bar">
+            <button class="tab-btn active">Sign In</button>
+        </div>
+
+        <!-- Sign In Panel -->
+        <div class="panel">
+
+            <div th:if="${errorMessage}" class="msg-error" role="alert">
+                <span th:text="${errorMessage}"></span>
+            </div>
+
+            <form action="/login" method="post">
+
+                <div class="form-group">
+                    <label for="employeeId">Employee ID</label>
+
+                    <div class="input-wrap">
+                        <svg class="field-icon" viewBox="0 0 24 24">
+                            <rect x="3" y="4" width="18" height="16" rx="2"/>
+                            <path d="M9 9h6M9 13h4"/>
+                        </svg>
+
+                        <input type="number"
+                               name="employeeId"
+                               id="employeeId"
+                               class="form-control"
+                               placeholder="Enter your Employee ID"
+                               required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+
+                    <div class="input-wrap has-toggle">
+                        <svg class="field-icon" viewBox="0 0 24 24">
+                            <rect x="3" y="11" width="18" height="11" rx="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+
+                        <input type="password"
+                               name="password"
+                               id="password"
+                               class="form-control"
+                               placeholder="Enter your password"
+                               required>
+
+                        <button type="button"
+                                class="pwd-toggle"
+                                onclick="togglePwd('password', this)">
+
+                            <svg viewBox="0 0 24 24">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-meta">
+
+                    <label class="remember-wrap">
+                        <input type="checkbox" name="remember-me">
+                        <span>Remember me</span>
+                    </label>
+
+                    <a href="/forgot-password" class="forgot-link">
+                        Forgot password?
+                    </a>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-login">
+                        Login
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <div class="page-footer">
+        © 2024 CMPDIL · Asset Management System
+    </div>
+
+</div>
+
+<script>
+    function togglePwd(inputId, btn) {
+
+        const input = document.getElementById(inputId);
+
+        const isHidden = input.type === 'password';
+
+        input.type = isHidden ? 'text' : 'password';
+
+        const svg = btn.querySelector('svg');
+
+        svg.innerHTML = isHidden
+            ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>'
+            : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    }
+</script>
+
+</body>
+</html>

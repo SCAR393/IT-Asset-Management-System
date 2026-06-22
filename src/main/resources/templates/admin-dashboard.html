@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — Asset Management System</title>
+ 
+  <link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+  
+
+  <style>
+    :root {
+      --forest:   #0f172a;
+      --forest2:  #1e293b;
+      --leaf:     #334155;
+      --mint:     #475569;
+      --saffron:  #d4af37;
+      --gold:     #f5c542;
+      --cream:    #f8fafc;
+      --crimson:  #dc2626;
+      --blush:    #fee2e2;
+      --slate:    #64748b;
+      --muted:    #64748b;
+      --border:   #e2e8f0;
+      --white:    #ffffff;
+      --bg:       #f1f5f9;
+      --text:     #0f172a;
+      --sidebar-w:300px;
+      --header-h: 75px;
+      --radius:   12px;
+      --shadow:   0 8px 25px rgba(15,23,42,.12);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── SIDEBAR ──────────────────────────── */
+    aside {
+      position: fixed; top: 0; left: 0; bottom: 0; z-index: 200;
+      width: var(--sidebar-w);
+      background: var(--forest);
+      display: flex; flex-direction: column;
+      border-right: 1px solid rgba(255,255,255,.06);
+    }
+    .sidebar-brand {
+      height: var(--header-h);
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 20px;
+      background: var(--forest2);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      flex-shrink: 0;
+    }
+    .brand-emblem {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--saffron), var(--gold));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; color: #fff; flex-shrink: 0;
+    }
+    .brand-text strong {
+      font-family: 'Teko', sans-serif; font-size: 22px;
+      font-weight: 700; color: #fff; letter-spacing: .5px;
+      display: block; line-height: 1.1;
+    }
+    .brand-text small { font-size: 13px; color: #86a896; }
+
+    nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+    .nav-group { margin-bottom: 2px; }
+    .nav-label {
+      font-size: 20px; font-weight: 700; letter-spacing: 1.8px;
+      color: #5a8068; text-transform: uppercase;
+      padding: 10px 22px 4px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 24px; text-decoration: none;
+      color: #a8c4b4; font-size: 16px; font-weight: 600;
+      border-left: 3px solid transparent;
+      transition: all .16s; cursor: pointer;
+      background: none; border-right: none; border-top: none; border-bottom: none;
+      width: 100%; font-family: 'Inter', sans-serif;
+    }
+    .nav-item i { width: 24px; text-align: center; font-size: 18px; opacity: .85; }
+    .nav-item:hover { background: rgba(212,175,55,.12); color: var(--gold); border-left-color: var(--gold); }
+    .nav-item.active { background: rgba(212,175,55,.18); color: var(--gold); border-left-color: var(--gold); font-weight: 600; }
+    .nav-badge {
+      margin-left: auto; background: var(--crimson);
+      color: #fff; font-size: 12px; font-weight: 700;
+      padding: 4px 8px; border-radius: 10px;
+    }
+    .sidebar-foot {
+      padding: 14px 22px; border-top: 1px solid rgba(255,255,255,.06);
+      font-size: 13px; color: #5a8068; text-align: center;
+    }
+
+    /* ── HEADER ──────────────────────────── */
+    header {
+      position: fixed; top: 0; left: var(--sidebar-w); right: 0; z-index: 100;
+      height: var(--header-h);
+      background: var(--white);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 28px;
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 12px rgba(26,71,49,.07);
+    }
+    .hdr-left .page-title {
+      font-family: 'Teko', sans-serif; font-size: 32px; font-weight: 700;
+      color: var(--forest); letter-spacing: .5px;
+    }
+    .hdr-left .breadcrumb { font-size: 15px;font-weight: 500; color: var(--muted); margin-top: 1px; }
+    .hdr-right { display: flex; align-items: center; gap: 18px; }
+    .avatar {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: linear-gradient(135deg, #0f172a, #d4af37);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Teko', sans-serif; font-weight: 600; font-size: 22px;
+      color: #fff; cursor: pointer; border: 2px solid var(--mint);
+    }
+    .logout-link {
+      color: var(--muted); text-decoration: none; font-size: 18px;
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border);
+      transition: all .2s;
+    }
+    .logout-link:hover { background: var(--blush); color: var(--crimson); border-color: var(--crimson); }
+    
+    .change-location-btn {
+	    display: inline-flex;
+	    align-items: center;
+	    gap: 8px;
+	    padding: 10px 18px;
+	    background: linear-gradient(
+	        135deg,
+	        #1e2a47 0%,
+	        #2c3e66 100%
+	    );
+	    color: #ffffff;
+	    text-decoration: none;
+	    border: 1px solid rgba(212, 175, 55, 0.35);
+	    border-radius: 999px;
+	    font-size: 14px;
+	    font-weight: 600;
+	    box-shadow:
+	        0 4px 12px rgba(11, 19, 43, 0.25),
+	        0 0 0 1px rgba(212, 175, 55, 0.08);
+	    transition: all 0.3s ease;
+	}
+
+	.change-location-btn i {
+	    color: #d4af37;
+	    font-size: 13px;
+	}
+	
+	.change-location-btn:hover {
+	    transform: translateY(-2px);
+	    background: linear-gradient(
+	        135deg,
+	        #25365b 0%,
+	        #354b7a 100%
+	    );
+	    box-shadow:
+	        0 8px 18px rgba(11, 19, 43, 0.35),
+	        0 0 15px rgba(212, 175, 55, 0.15);
+	    border-color: #d4af37;
+	}
+	
+	.change-location-btn:active {
+	    transform: translateY(0);
+	}
+	.location-indicator{
+	    display:inline-flex;
+	    align-items:center;
+	    gap:8px;
+	    background:#fef3c7;
+	    color:#92400e;
+	    padding:10px 16px;
+	    border-radius:12px;
+	    font-size:14px;
+	    font-weight:700;
+	    border:1px solid #fde68a;
+	}
+
+    /* ── MAIN ────────────────────────────── */
+    main {
+      margin-left: var(--sidebar-w);
+      margin-top: var(--header-h);
+      padding: 26px 30px 44px;
+      flex: 1; min-width: 0;
+    }
+
+    /* ── WELCOME BANNER ──────────────────── */
+    .welcome-banner {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #d4af37 140%);
+      border-radius: var(--radius);
+      padding: 26px 34px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 26px;
+      box-shadow: var(--shadow);
+      position: relative; overflow: hidden;
+    }
+    .welcome-banner::before {
+      content: ''; position: absolute; top: -50px; right: -30px;
+      width: 200px; height: 200px; border-radius: 50%;
+      background: rgba(245,183,49,.07);
+    }
+    .welcome-banner::after {
+      content: ''; position: absolute; bottom: -50px; right: 140px;
+      width: 140px; height: 140px; border-radius: 50%;
+      background: rgba(77,204,163,.06);
+    }
+    .welcome-text h2 {
+      font-family: 'Teko', sans-serif; font-size: 38px; font-weight: 700;letter-spacing: 1px;
+      color: #fff; margin-bottom: 6px;text-transform: uppercase;
+    }
+    .welcome-text p { color: rgba(255,255,255,0.8);font-size:15px; font-weight: 500;letter-spacing:0.5px }
+    .welcome-right { text-align: right; color: #86c9a4; font-size: 12.5px; position: relative; z-index: 1; }
+    .welcome-right .big-date {
+      font-family: 'Teko', sans-serif; font-size: 44px; font-weight: 600;
+      color: var(--gold); line-height: 1;
+    }
+
+    /* ── STAT CARDS ──────────────────────── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+      gap: 16px; margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--white); border-radius: var(--radius);
+      padding: 20px 20px 16px;
+      box-shadow: var(--shadow);
+      border-left: 5px solid transparent;
+      transition: transform .2s, box-shadow .2s;
+      text-decoration: none; color: inherit; display: block;
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(26,71,49,.13); }
+    .stat-card.c-forest  { border-left-color: var(--forest2); }
+    .stat-card.c-leaf    { border-left-color: var(--leaf); }
+    .stat-card.c-mint    { border-left-color: var(--mint); }
+    .stat-card.c-saffron { border-left-color: var(--saffron); }
+    .stat-card.c-crimson { border-left-color: var(--crimson); }
+
+    .stat-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; margin-bottom: 14px;
+    }
+    .c-forest  .stat-icon { background: #d4ede1; color: var(--forest2); }
+    .c-leaf    .stat-icon { background: #d6f0e3; color: var(--leaf); }
+    .c-mint    .stat-icon { background: #d5f5ec; color: #1a9e73; }
+    .c-saffron .stat-icon { background: #fde9c8; color: var(--saffron); }
+    .c-crimson .stat-icon { background: var(--blush); color: var(--crimson); }
+
+    .stat-value {
+      font-family: 'Teko', sans-serif; font-size: 40px; font-weight: 600;
+      line-height: 1; color: var(--text); margin-bottom: 3px;
+    }
+    .stat-label { font-size: 12.5px; color: var(--muted); font-weight: 500; }
+    .stat-trend { font-size: 11.5px; margin-top: 10px; display: flex; align-items: center; gap: 4px; }
+    .t-up   { color: var(--leaf); }
+    .t-down { color: var(--crimson); }
+    .t-neu  { color: var(--saffron); }
+
+    /* ── CHART CARDS ─────────────────────── */
+    .charts-grid {
+      display: grid; grid-template-columns: 2fr 1fr;
+      gap: 20px; margin-bottom: 22px;
+    }
+    .charts-row2 {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 20px; margin-bottom: 22px;
+    }
+    .chart-card {
+      background: var(--white); border-radius: var(--radius);
+      padding: 22px; box-shadow: var(--shadow);
+    }
+    .chart-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .chart-title {
+      font-family: 'Teko', sans-serif; font-size: 18px; font-weight: 600;
+      color: var(--forest); letter-spacing: .3px;
+    }
+    .chart-subtitle { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+    .chart-badge {
+      font-size: 10.5px; font-weight: 600; padding: 3px 11px; border-radius: 20px;
+      background: #d4ede1; color: var(--forest2); white-space: nowrap;
+    }
+
+    /* ── TABLE ───────────────────────────── */
+    .table-card {
+      background: var(--white); border-radius: var(--radius);
+      box-shadow: var(--shadow); overflow: hidden; margin-bottom: 26px;
+    }
+    .table-header {
+      padding: 18px 22px; display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .table-title {
+      font-family: 'Teko', sans-serif; font-size: 18px; font-weight: 600; color: var(--forest);
+    }
+    .table-actions { display: flex; align-items: center; gap: 10px; }
+    .table-actions input {
+      border: 1.5px solid var(--border); border-radius: 8px;
+      padding: 7px 13px; font-size: 13px; font-family: 'Inter', sans-serif;
+      outline: none; color: var(--text); width: 210px; transition: border-color .2s;
+    }
+    .table-actions input:focus { border-color: var(--leaf); }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: #f4f8f5; }
+    th {
+      padding: 11px 16px; text-align: left;
+      font-size: 11px; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .9px;
+      border-bottom: 1.5px solid var(--border);
+    }
+    td { padding: 12px 16px; font-size: 13.5px; color: var(--text); border-bottom: 1px solid #f0f5f2; }
+    tbody tr:hover { background: #f8fbf9; }
+    tbody tr:last-child td { border-bottom: none; }
+
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11.5px; font-weight: 600; padding: 3px 11px; border-radius: 20px;
+    }
+    .pill-active   { background: #d6f0e3; color: #155724; }
+    .pill-service  { background: #fde9c8; color: #7a4a00; }
+    .pill-expired  { background: var(--blush); color: #7f1d1d; }
+    .pill-inactive { background: #f1f5f9; color: #475569; }
+
+    /* ── FOOTER ──────────────────────────── */
+    footer {
+      margin-left: var(--sidebar-w);
+      background: var(--forest); color: #5a8068;
+      text-align: center; padding: 13px 20px; font-size: 12.5px;
+    }
+    footer span { color: var(--gold); }
+
+    /* ── ANIMATIONS ──────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fu  { animation: fadeUp .4s ease both; }
+    .d1  { animation-delay: .07s; } .d2 { animation-delay: .14s; }
+    .d3  { animation-delay: .21s; } .d4 { animation-delay: .28s; }
+    .d5  { animation-delay: .35s; }
+  </style>
+</head>
+<body>
+
+<!-- ══ SIDEBAR ═══════════════════════════════════════════ -->
+<aside>
+  <div class="sidebar-brand">
+    <div class="brand-emblem"><i class="fas fa-landmark"></i></div>
+    <div class="brand-text">
+      <strong>GOV ASSET MGMT</strong>
+      <small>CMPDIL</small>
+    </div>
+  </div>
+  <nav>
+    <div class="nav-group">
+      <div class="nav-label">Overview</div>
+      <button class="nav-item active"><i class="fas fa-th-large"></i> Dashboard</button>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">People</div>
+      <button class="nav-item" onclick="location.href='/adduser'"><i class="fas fa-user-plus"></i> Add User</button>
+      <button class="nav-item" onclick="location.href='/employee'"><i class="fas fa-users"></i> Employees</button>
+      <button class="nav-item" onclick="location.href='/seller'"><i class="fas fa-user-shield"></i> Sellers</button>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">Assets</div>
+      <button class="nav-item" onclick="location.href='/addasset'"><i class="fas fa-plus-circle"></i> Add Asset</button>
+      <button class="nav-item" onclick="location.href='/listassets'"><i class="fas fa-list"></i> All Assets</button>
+      <button class="nav-item" onclick="location.href='/assets-requiring-service'">
+        <i class="fas fa-tools"></i> Needs Servicing
+        <span class="nav-badge" th:text="${serviceRequiredCount}">0</span>
+      </button>
+      <button class="nav-item" onclick="location.href='/listwarranty'"><i class="fas fa-shield-alt"></i> Warranty</button>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">Catalogue</div>
+      <button class="nav-item" onclick="location.href='/product'"><i class="fas fa-box-open"></i> Products</button>
+      <button class="nav-item" onclick="location.href='/addlocation'"><i class="fas fa-map-marker-alt"></i> Add Location</button>
+      <button class="nav-item" onclick="location.href='/listlocation'"><i class="fas fa-map"></i> All Locations</button>
+      <button class="nav-item" onclick="location.href='/assign-lot'"><i class="fas fa-link"></i>Assign Lot</button>
+      <button class="nav-item" onclick="location.href='/provisional-survey/report'"><i class="fas fa-clipboard-check"></i>Provisional Survey Report</button>
+      <button class="nav-item" onclick="location.href='/asset-labels'"><i class="fa-solid fa-qrcode"></i>Asset Labels</button>
+    </div>
+  </nav>
+  <div class="sidebar-foot">Version 3.2.1 &nbsp;|&nbsp; FY 2024–25</div>
+</aside>
+
+<!-- ══ HEADER ════════════════════════════════════════════ -->
+<header>
+  <div class="hdr-left">
+    <div class="page-title">Admin Dashboard</div>
+    <div class="breadcrumb">Home / Dashboard</div>
+  </div>
+  <div class="location-indicator">
+    <i class="fa-solid fa-location-dot"></i>
+    <span th:text="${selectedLocation.location_name}">
+        CMPDIL HQ
+    </span>
+</div>
+  <div class="hdr-right">
+  	<a href="/select-location" class="change-location-btn">
+    <i class="fas fa-map-marker-alt"></i>
+    <span>Change Location</span>
+	</a>
+    <div class="avatar">AD</div>
+    <a href="/" class="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </div>
+</header>
+
+<!-- ══ MAIN ══════════════════════════════════════════════ -->
+<main>
+
+  <!-- Welcome -->
+  <div class="welcome-banner fu">
+    <div class="welcome-text">
+      <h2>Welcome Back, Administrator</h2>
+      <p>Centralized Monitoring, Asset Tracking & Administrative Control</p>
+    </div>
+    <div class="welcome-right">
+      <div class="big-date" id="day-num">—</div>
+      <div id="month-year">—</div>
+      <div style="margin-top:8px;font-size:14px;font-weight:600;">Asset Operations Dashboard</div>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="stats-grid">
+    <a href="/employee" class="stat-card c-forest fu d1">
+      <div class="stat-icon"><i class="fas fa-users"></i></div>
+      <div class="stat-value" th:text="${employeeCount}">0</div>
+      <div class="stat-label">Total Employees</div>
+      <div class="stat-trend t-up"><i class="fas fa-arrow-up"></i> Active headcount</div>
+    </a>
+    <a href="/listassets" class="stat-card c-leaf fu d2">
+      <div class="stat-icon"><i class="fas fa-boxes"></i></div>
+      <div class="stat-value" th:text="${assetCount}">0</div>
+      <div class="stat-label">Total Assets</div>
+      <div class="stat-trend t-up"><i class="fas fa-arrow-up"></i> Across all locations</div>
+    </a>
+    <a href="/listlocation" class="stat-card c-mint fu d3">
+      <div class="stat-icon"><i class="fas fa-map-marker-alt"></i></div>
+      <div class="stat-value" th:text="${locationCount}">0</div>
+      <div class="stat-label">Active Locations</div>
+      <div class="stat-trend t-neu"><i class="fas fa-minus"></i> No change this month</div>
+    </a>
+    <a href="/assets-requiring-service" class="stat-card c-saffron fu d4">
+      <div class="stat-icon"><i class="fas fa-tools"></i></div>
+      <div class="stat-value" th:text="${serviceRequiredCount}">0</div>
+      <div class="stat-label">Needs Servicing</div>
+      <div class="stat-trend t-down"><i class="fas fa-exclamation-triangle"></i> Attention required</div>
+    </a>
+    <a href="/listwarranty" class="stat-card c-crimson fu d5">
+      <div class="stat-icon"><i class="fas fa-shield-alt"></i></div>
+      <div class="stat-value" th:text="${warrantyExpiredCount}">0</div>
+      <div class="stat-label">Warranty Expired</div>
+      <div class="stat-trend t-down"><i class="fas fa-arrow-up"></i> Review pending</div>
+    </a>
+  </div>
+
+  <!-- Charts Row 1 -->
+  <div class="charts-grid fu d2">
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Asset Acquisition — Monthly Trend</div>
+          <div class="chart-subtitle">Last 8 months · all categories</div>
+        </div>
+        <span class="chart-badge">Bar Chart</span>
+      </div>
+      <canvas id="barChart" height="88"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Asset Status</div>
+          <div class="chart-subtitle">Current distribution</div>
+        </div>
+        <span class="chart-badge">Doughnut</span>
+      </div>
+      <canvas id="doughnutChart" height="155"></canvas>
+    </div>
+  </div>
+
+  <!-- Charts Row 2 -->
+  <div class="charts-row2 fu d3">
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Assets by Category</div>
+          <div class="chart-subtitle">PC · Laptop · Printer · Plotter · Scanner · Others</div>
+        </div>
+        <span class="chart-badge">Pie Chart</span>
+      </div>
+      <canvas id="pieChart" height="148"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Service &amp; Warranty Alerts</div>
+          <div class="chart-subtitle">Monthly trend — last 8 months</div>
+        </div>
+        <span class="chart-badge">Line Chart</span>
+      </div>
+      <canvas id="lineChart" height="148"></canvas>
+    </div>
+  </div>
+
+  <!-- Recent Assets Table -->
+  <div class="table-card fu d4">
+    <div class="table-header">
+      <div class="table-title"><i class="fas fa-table" style="color:var(--leaf);margin-right:8px;font-size:16px;"></i>Last 10 Assigned Assets</div>
+      <div class="table-actions">
+        <input type="text" placeholder="Search assets…" oninput="filterTable(this)" />
+      </div>
+    </div>
+    <table id="assetTable">
+      <thead>
+        <tr>
+          <th>Asset ID</th><th>Asset Name</th><th>Category</th>
+          <th>Location</th><th>Assigned To</th><th>Warranty</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Dynamic rows from controller: model.addAttribute("recentAssets", list) -->
+        <tr th:each="asset : ${recentAssets}">
+          <td th:text="${asset.assetId}"></td>
+          <td th:text="${asset.product.productName}"></td>
+          <td th:text="${asset.product.categoryName}"></td>
+          <td th:text="${asset.location.location_name}"></td>
+          <td th:text="${asset.employee != null ? asset.employee.name : 'Unassigned'}"></td>
+          <td th:text="${asset.warrantyYears}"></td>
+          <td>
+            <span class="status-pill pill-active"
+              th:text="${asset.status}">
+        	</span>
+          </td>
+        </tr>
+        <!-- Fallback row shown only when list is empty -->
+        <tr th:if="${#lists.isEmpty(recentAssets)}">
+          <td colspan="7" style="text-align:center;color:var(--muted);padding:24px;">No asset records found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<footer>&copy; 2024 <span>Government Asset Management System</span>. All rights reserved. CMPDIL.</footer>
+
+<!-- ══ THYMELEAF DATA INJECTION ═══════════════════════════ -->
+<script th:inline="javascript">
+  /*<![CDATA[*/
+
+  // ── KPI counts (used in stat cards via th:text, no JS needed)
+
+  // ── Bar chart data
+  const barLabels  = /*[[${barLabels}]]*/ ['Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr'];
+  const barData    = /*[[${barData}]]*/   [18, 27, 14, 32, 21, 19, 36, 24];
+
+  // ── Doughnut — asset status
+  const statusActive     = /*[[${statusActive}]]*/ 420;
+  const statusService    = /*[[${statusService}]]*/ 14;
+  const statusWarranty   = /*[[${statusWarranty}]]*/ 23;
+  const statusUnassigned = /*[[${statusUnassigned}]]*/ 85;
+
+  // ── Pie — asset categories
+ 
+  const categoryLabels =/*[[${categoryLabels}]]*/ [];
+  const categoryCounts =/*[[${categoryCounts}]]*/ [];
+  
+  // ── Line chart data
+  const lineLabels      = /*[[${lineLabels}]]*/      ['Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr'];
+  const lineServiceData = /*[[${lineServiceData}]]*/ [5, 8, 6, 11, 9, 12, 14, 10];
+  const lineWarrantyData= /*[[${lineWarrantyData}]]*/ [3, 5, 8, 12, 15, 18, 21, 23];
+
+  /*]]>*/
+</script>
+
+<script>
+  // ── Live clock
+  function tick() {
+    const now = new Date();
+    document.getElementById('day-num').textContent   = now.getDate();
+    document.getElementById('month-year').textContent = now.toLocaleString('en-IN', {month:'long', year:'numeric'});
+  }
+  tick(); setInterval(tick, 1000);
+
+  // ── Table search
+  function filterTable(input) {
+    const q = input.value.toLowerCase();
+    document.querySelectorAll('#assetTable tbody tr').forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  }
+
+  // ── Palette
+  const P = {
+    forest:  '#0f172a', forest2: '#1e293b', leaf:   '#334155',
+    mint:    '#64748b', saffron: '#d4af37', gold:   '#f5c542',
+    crimson: '#dc2626', slate:   '#64748b', teal:   '#94a3b8',
+    violet:  '#c9a227'
+  };
+
+  // ── 1. Bar — Monthly acquisitions
+  new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {
+      labels: barLabels,
+      datasets: [{
+        label: 'Assets Added',
+        data: barData,
+        backgroundColor: ctx => {
+          const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 220);
+          g.addColorStop(0, P.leaf); g.addColorStop(1, P.mint);
+          return g;
+        },
+        borderRadius: 7, borderSkipped: false, barPercentage: .62
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: v => ` ${v.raw} assets added` } }
+      },
+      scales: {
+        y: { grid: { color: '#eef3f0' }, ticks: { color: P.slate }, border: { display: false } },
+        x: { grid: { display: false },   ticks: { color: P.slate }, border: { display: false } }
+      }
+    }
+  });
+
+  // ── 2. Doughnut — Asset status
+	  const totalStatus =
+		    statusActive +
+		    statusService +
+		    statusWarranty +
+		    statusUnassigned;
+
+		new Chart(document.getElementById('doughnutChart'), {
+		    type: 'doughnut',
+		    data: {
+		        labels:
+		            totalStatus === 0
+		            ? ['No Data']
+		            : ['Active', 'Needs Service', 'Warranty Expired', 'Unassigned'],
+
+		        datasets: [{
+		            data:
+		                totalStatus === 0
+		                ? [1]
+		                : [
+		                    statusActive,
+		                    statusService,
+		                    statusWarranty,
+		                    statusUnassigned
+		                ],
+
+		            backgroundColor:
+		                totalStatus === 0
+		                ? ['#e2e8f0']
+		                : [
+		                    P.leaf,
+		                    P.saffron,
+		                    P.crimson,
+		                    '#94a3b8'
+		                ],
+
+		            borderWidth: 3,
+		            borderColor: '#fff'
+		        }]
+		    },
+		    options: {
+		        cutout: '68%',
+		        plugins: {
+		            legend: {
+		                position: 'bottom'
+		            }
+		        }
+		    }
+		});
+
+  // ── 3. Pie — Asset categories
+  const totalCategories =
+    categoryCounts.reduce((sum, val) => sum + val, 0);
+	
+	new Chart(document.getElementById('pieChart'), {
+	    type: 'pie',
+	    data: {
+	        labels:
+	            totalCategories === 0
+	                ? ['No Data']
+	                : categoryLabels,
+	
+	        datasets: [{
+	            data:
+	                totalCategories === 0
+	                    ? [1]
+	                    : categoryCounts,
+	
+	            backgroundColor:
+	                totalCategories === 0
+	                    ? ['#e2e8f0']
+	                    : [
+	                        P.forest2,
+	                        P.leaf,
+	                        P.mint,
+	                        P.saffron,
+	                        P.gold,
+	                        P.teal
+	                    ],
+	
+	            borderWidth: 3,
+	            borderColor: '#fff',
+	            hoverOffset: 10
+	        }]
+	    },
+	    options: {
+	        plugins: {
+	            legend: {
+	                position: 'bottom',
+	                labels: {
+	                    color: '#475569',
+	                    font: { size: 11 },
+	                    padding: 11,
+	                    usePointStyle: true
+	                }
+	            }
+	        }
+	    }
+	});
+
+  // ── 4. Line — Service & Warranty alerts
+  new Chart(document.getElementById('lineChart'), {
+    type: 'line',
+    data: {
+      labels: lineLabels,
+      datasets: [
+        {
+          label: 'Service Alerts',
+          data: lineServiceData,
+          borderColor: P.saffron, backgroundColor: 'rgba(232,137,12,.10)',
+          tension: .4, fill: true, pointRadius: 4, pointBackgroundColor: P.saffron,
+          borderWidth: 2.5
+        },
+        {
+          label: 'Warranty Expired',
+          data: lineWarrantyData,
+          borderColor: P.crimson, backgroundColor: 'rgba(192,57,43,.07)',
+          tension: .4, fill: true, pointRadius: 4, pointBackgroundColor: P.crimson,
+          borderWidth: 2.5
+        }
+      ]
+    },
+    options: {
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: '#475569', font: { size: 11 }, usePointStyle: true, padding: 12 }
+        }
+      },
+      scales: {
+        y: { grid: { color: '#eef3f0' }, ticks: { color: P.slate }, border: { display: false } },
+        x: { grid: { display: false },   ticks: { color: P.slate }, border: { display: false } }
+      }
+    }
+  });
+</script>
+</body>
+</html>
