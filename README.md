@@ -127,7 +127,3 @@ src/
 - QR Code Generation
 - Survey Lot Management
 - Reports & Analytics
-
-B.Tech Computer Science Engineering
-
-CMPDI IT Asset Management System Project
